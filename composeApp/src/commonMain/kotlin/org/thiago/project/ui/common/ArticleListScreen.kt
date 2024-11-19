@@ -12,27 +12,34 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.thiago.project.data.model.Article
 import org.thiago.project.theme.xLargePadding
+import org.thiago.project.ui.navigation.NewsRouteScreen
 import org.thiago.project.utils.Type
 import org.thiago.project.utils.articles
 import org.thiago.project.utils.getRandomId
 import org.thiago.project.utils.getType
 
 
-@Composable
-fun ArticleListScreen() {
 
+@Composable
+fun ArticleListScreen(articleList: List<Article>,navController: NavController) {
+    val isDesktop = remember {
+        getType() == Type.Desktop
+    }
     LazyVerticalGrid(
-        columns = GridCells.Fixed(1),
+        columns = GridCells.Fixed(if (isDesktop) 3 else 1),
         verticalArrangement = Arrangement.spacedBy(xLargePadding),
         horizontalArrangement = Arrangement.spacedBy(xLargePadding),
         contentPadding = PaddingValues(xLargePadding),
     ){
-        items(articles, key = {
+        items(articleList, key = {
             it.publishedAt+ getRandomId()
         }) { item ->
             ArticleItem(article = item, onClick = {
                 val articleStr = Json.encodeToString(item)
-
+                navController.currentBackStackEntry?.savedStateHandle?.apply {
+                    set("article",articleStr)
+                }
+               navController.navigate(NewsRouteScreen.NewsDetail.route)
 
             })
         }

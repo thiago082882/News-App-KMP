@@ -1,5 +1,9 @@
 package org.thiago.project.utils
 
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
 import kmp_news_app.composeapp.generated.resources.Res
 import kmp_news_app.composeapp.generated.resources.bookmark
 import kmp_news_app.composeapp.generated.resources.headlines
@@ -14,6 +18,9 @@ import org.thiago.project.ui.navigation.BottomNavigationItem
 import org.thiago.project.ui.navigation.MainRouteScreen
 import kotlin.random.Random
 
+const val BASE_URL = "https://newsapi.org/v2/"
+const val DB_Name = "myNewsDB"
+const val dataStoreFileName = "setting.preferences_pb"
 
 val bottomNavigationItemsList = listOf(
     BottomNavigationItem(
@@ -32,7 +39,9 @@ val bottomNavigationItemsList = listOf(
         route = MainRouteScreen.Bookmark.route,
     ),
 )
-
+enum class Theme {
+    Light, Dark
+}
 enum class Type {
    Mobile,
     Desktop
@@ -85,3 +94,10 @@ val newsResponse = NewsResponse(
     "dwe",
     5
 )
+val FadeIn = fadeIn(animationSpec = tween(220, delayMillis = 90)) +
+        scaleIn(
+            initialScale = 0.92f,
+            animationSpec = tween(220, delayMillis = 90)
+        )
+
+val FadeOut = fadeOut(animationSpec = tween(90))

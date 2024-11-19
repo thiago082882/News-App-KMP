@@ -13,11 +13,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import coil3.compose.AsyncImage
+import kmp_news_app.composeapp.generated.resources.Res
+import kmp_news_app.composeapp.generated.resources.logo
+import org.jetbrains.compose.resources.painterResource
 import org.thiago.project.data.model.Article
 import org.thiago.project.theme.imageSize
 import org.thiago.project.theme.mediumPadding
+import org.thiago.project.theme.xxSmallPadding
+
+
 
 @Composable
 fun ArticleItem(
@@ -25,27 +33,35 @@ fun ArticleItem(
     onClick: () -> Unit
 ) {
 
-    Row(modifier = Modifier.clickable {
-        onClick()
-    }) {
-        Box(
+    Row(
+        modifier = Modifier.clickable { onClick() },
+        horizontalArrangement = Arrangement.spacedBy(mediumPadding)
+    ) {
+
+        AsyncImage(
             modifier = Modifier
                 .size(imageSize)
                 .clip(MaterialTheme.shapes.large)
-                .background(Color.Gray)
+                .background(Color.Gray),
+            model = article.urlToImage,
+            error = painterResource(Res.drawable.logo),
+            contentScale = ContentScale.Crop,
+            contentDescription = null
         )
+
         Column(
-            modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(
-                mediumPadding
-            )
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(xxSmallPadding)
         ) {
-        Text(
-            text = article.title,
-            style = MaterialTheme.typography.titleLarge,
-            color = MaterialTheme.colorScheme.onSurface,
-            overflow = TextOverflow.Ellipsis,
-            maxLines = 2
-        )
+            Text(
+                text = article.title,
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface,
+                overflow = TextOverflow.Ellipsis,
+                maxLines = 2
+            )
+
             article.description?.let {
                 Text(
                     text = it,
@@ -55,15 +71,13 @@ fun ArticleItem(
                     maxLines = 2
                 )
             }
+
             Text(
                 text = article.source.name,
                 style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurface,
-                fontWeight = FontWeight.Bold
-
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface
             )
-
         }
     }
-
 }
