@@ -1,5 +1,7 @@
 package org.thiago.project.theme
 
+
+
 import androidx.compose.ui.unit.dp
 
 val xxSmallPadding = 4.dp
@@ -13,6 +15,5 @@ val xLargePadding = 24.dp
 val xxLargePadding = 32.dp
 val xxxLargePadding = 48.dp
 
-
+val cardMinSize = 360.dp
 val imageSize = 120.dp
-val detailImageSize = 250.dp

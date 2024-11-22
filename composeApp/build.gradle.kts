@@ -52,6 +52,10 @@ kotlin {
             // Ktor
             implementation(libs.ktor.client.android)
 
+            // Koin
+            implementation(libs.koin.android)
+            implementation(libs.koin.androidx.compose)
+
 
             // Splash API
             implementation(libs.androidx.core.splashscreen)
@@ -84,6 +88,10 @@ kotlin {
             implementation(libs.sqlite.bundled)
 
 
+            // window-size
+            implementation(libs.screen.size)
+
+
             // Ktor
             implementation(libs.ktor.core)
             implementation(libs.ktor.json)
@@ -96,6 +104,11 @@ kotlin {
 
             //dataStore
             implementation(libs.androidx.data.store.core)
+
+            // Koin
+            api(libs.koin.core)
+            implementation(libs.koin.compose)
+            implementation(libs.koin.composeVM)
 
 
         }

@@ -1,7 +1,12 @@
 package org.thiago.project.ui.common
 
+
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -21,12 +26,12 @@ import org.jetbrains.compose.resources.stringResource
 import org.thiago.project.theme.imageSize
 import org.thiago.project.theme.smallPadding
 
-
 @Composable
 fun EmptyContent(
     message: String,
     icon: DrawableResource,
-    onRetryClick: (() -> Unit)?
+    isOnRetryBtnVisible: Boolean = true,
+    onRetryClick: (() -> Unit) = { }
 ) {
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -47,8 +52,8 @@ fun EmptyContent(
             textAlign = TextAlign.Center,
             color = if (!isSystemInDarkTheme()) LightGray else DarkGray,
         )
-        onRetryClick?.let {
-            Button(onClick = it) {
+        if (isOnRetryBtnVisible) {
+            Button(onClick = onRetryClick) {
                 Text(
                     text = stringResource(Res.string.retry),
                     style = MaterialTheme.typography.titleMedium

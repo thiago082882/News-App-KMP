@@ -4,6 +4,8 @@ import androidx.room.*
 import kotlinx.coroutines.flow.Flow
 import org.thiago.project.data.model.Article
 
+
+
 @Dao
 interface NewsDao {
 

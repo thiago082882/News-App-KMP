@@ -1,8 +1,12 @@
 package org.thiago.project.ui.search
 
+
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.ktor.client.call.*
+import io.ktor.client.call.body
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,11 +18,12 @@ import org.thiago.project.data.model.NewsResponse
 import org.thiago.project.data.repository.OnlineNewsRepository
 import org.thiago.project.utils.Resource
 
-class SearchViewModel : ViewModel() {
+class SearchViewModel(
+    private val onlineNewsRepository: OnlineNewsRepository
+) : ViewModel() {
 
 
-    private val onlineNewsRepository = OnlineNewsRepository()
-
+    var searchQuery by mutableStateOf("")
 
     private val _newsStateFlow =
         MutableStateFlow<Resource<List<Article>>>(Resource.Idle)

@@ -8,24 +8,18 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.launch
-import org.thiago.project.data.database.NewsDatabase
 import org.thiago.project.data.model.Article
 import org.thiago.project.data.repository.LocalNewsRepository
 
 class ArticleDetailViewModel(
-    newsDatabase: NewsDatabase
+    private val localNewsRepository: LocalNewsRepository
 ) : ViewModel() {
 
-    private val localNewsRepository = LocalNewsRepository(newsDatabase.newsDao())
     var isBookmarked by mutableStateOf(false)
 
     fun isArticleBookmark(currentArticle: Article) {
         viewModelScope.launch(Dispatchers.IO) {
-            currentArticle.publishedAt.let {
-                localNewsRepository.getArticle(it)?.let {
-                    isBookmarked = true
-                }
-            }
+            isBookmarked = localNewsRepository.getArticle(currentArticle.publishedAt) != null
         }
     }
 

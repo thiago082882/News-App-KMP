@@ -1,58 +1,70 @@
 package org.thiago.project.ui.search
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.sp
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.text.font.FontWeight
 import androidx.navigation.NavController
-import org.jetbrains.compose.resources.stringResource
-import org.thiago.project.theme.mediumPadding
-import org.thiago.project.ui.common.ArticleListScreen
-import org.thiago.project.ui.search.components.SearchBar
-
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-
-import androidx.lifecycle.viewmodel.compose.viewModel
 import kmp_news_app.composeapp.generated.resources.Res
 import kmp_news_app.composeapp.generated.resources.ic_browse
 import kmp_news_app.composeapp.generated.resources.ic_network_error
 import kmp_news_app.composeapp.generated.resources.type_to_search
-
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.viewmodel.koinViewModel
+import org.thiago.project.theme.xSmallPadding
+import org.thiago.project.ui.common.ArticleListScreen
 import org.thiago.project.ui.common.EmptyContent
 import org.thiago.project.ui.common.ShimmerEffect
+import org.thiago.project.ui.navigation.SettingRouteScreen
+import org.thiago.project.utils.navigationItemsLists
 
-
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchScreen(
-    navController: NavController,
+    rootNavController: NavController,
+    paddingValues: PaddingValues,
 ) {
-    val searchViewModel = viewModel { SearchViewModel() }
+    val searchViewModel = koinViewModel<SearchViewModel>()
     val uiState by searchViewModel.newsStateFlow.collectAsState()
-
-    val searchQuery by rememberSaveable { mutableStateOf("") }
+    val originDirection = LocalLayoutDirection.current
 
     Column(
-        verticalArrangement = Arrangement.spacedBy(mediumPadding)
+        modifier = Modifier.fillMaxSize().padding(
+            start = paddingValues.calculateStartPadding(originDirection),
+            end = paddingValues.calculateEndPadding(originDirection),
+            bottom = paddingValues.calculateBottomPadding()
+        ),
+        verticalArrangement = Arrangement.spacedBy(xSmallPadding)
     ) {
-        SearchBar(
-            modifier = Modifier.padding(horizontal = mediumPadding),
-            text = searchQuery,
+        TopAppBar(title = {
+            Text(
+                text = stringResource(navigationItemsLists[1].title),
+                style = MaterialTheme.typography.headlineLarge,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+        }, actions = {
+            IconButton(onClick = {
+                rootNavController.navigate(SettingRouteScreen.SettingDetail.route)
+            }) {
+                Icon(
+                    imageVector = Icons.Filled.Settings,
+                    contentDescription = null,
+                )
+            }
+        })
+        org.thiago.project.ui.search.components.SearchBar(
+            text = searchViewModel.searchQuery,
+            onValueChange = { query ->
+                searchViewModel.searchQuery = query
+            },
             onSearch = { query ->
-                if (query.trim().isNotEmpty()){
+                if (query.trim().isNotEmpty()) {
                     searchViewModel.searchQueryNews(query.trim())
                 }
             },
@@ -62,7 +74,7 @@ fun SearchScreen(
                 EmptyContent(
                     message = stringResource(Res.string.type_to_search),
                     icon = Res.drawable.ic_browse,
-                    onRetryClick = null
+                    isOnRetryBtnVisible = false
                 )
             },
             onLoading = {
@@ -72,17 +84,22 @@ fun SearchScreen(
                 if (articleList.isEmpty()) {
                     EmptyContent(
                         message = stringResource(Res.string.type_to_search),
-                        icon = Res.drawable.ic_browse,
-                        onRetryClick = null
-                    )
+                        icon = Res.drawable.ic_browse, onRetryClick = {
+                            if (searchViewModel.searchQuery.trim().isNotEmpty()) {
+                                searchViewModel.searchQueryNews(searchViewModel.searchQuery.trim())
+                            }
+                        })
                 } else {
-                    ArticleListScreen(articleList,navController)
+                    ArticleListScreen(
+                        articleList = articleList,
+                        rootNavController = rootNavController
+                    )
                 }
             },
             onError = {
                 EmptyContent(message = it, icon = Res.drawable.ic_network_error, onRetryClick = {
-                    if (searchQuery.trim().isNotEmpty()){
-                        searchViewModel.searchQueryNews(searchQuery.trim())
+                    if (searchViewModel.searchQuery.trim().isNotEmpty()) {
+                        searchViewModel.searchQueryNews(searchViewModel.searchQuery.trim())
                     }
                 })
             }

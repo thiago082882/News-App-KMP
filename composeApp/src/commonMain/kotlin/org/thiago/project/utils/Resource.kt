@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
 
+
 sealed class Resource<out T> {
     data object Idle : Resource<Nothing>()
     data object Loading : Resource<Nothing>()

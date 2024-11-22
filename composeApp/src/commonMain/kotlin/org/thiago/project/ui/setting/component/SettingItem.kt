@@ -19,7 +19,6 @@ import androidx.compose.ui.text.font.FontWeight
 import org.thiago.project.theme.mediumPadding
 import org.thiago.project.theme.xLargePadding
 
-
 @Composable
 fun SettingItem(
     onClick: () -> Unit,

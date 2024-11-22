@@ -1,46 +1,80 @@
 package org.thiago.project.ui.bookmark
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.material.Text
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.sp
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.text.font.FontWeight
 import androidx.navigation.NavController
 import kmp_news_app.composeapp.generated.resources.Res
-import kmp_news_app.composeapp.generated.resources.ic_network_error
+import kmp_news_app.composeapp.generated.resources.ic_browse
 import kmp_news_app.composeapp.generated.resources.no_bookmarks
 import org.jetbrains.compose.resources.stringResource
-import org.thiago.project.data.database.NewsDatabase
+import org.koin.compose.viewmodel.koinViewModel
 import org.thiago.project.ui.common.ArticleListScreen
 import org.thiago.project.ui.common.EmptyContent
 import org.thiago.project.ui.common.ShimmerEffect
+import org.thiago.project.ui.navigation.SettingRouteScreen
+import org.thiago.project.utils.navigationItemsLists
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BookmarkScreen(
-    navController: NavController, newsDatabase: NewsDatabase
-
+    rootNavController: NavController,
+    paddingValues: PaddingValues
 ) {
-    val bookmarkViewModel = viewModel {
-        BookmarkViewModel(newsDatabase)
-    }
-    val uiState by bookmarkViewModel.bookmarkNewsStateFlow.collectAsState()
+    val bookmarkViewModel = koinViewModel<BookmarkViewModel>()
 
-    uiState.DisplayResult(onLoading = {
-        ShimmerEffect()
-    }, onSuccess = { articleList ->
-        if (articleList.isEmpty()) {
-            EmptyContent(message = stringResource(Res.string.no_bookmarks), icon = Res.drawable.ic_network_error, onRetryClick = null)
-        } else {
-            ArticleListScreen(articleList,navController)
-        }
-    }, onError = {
-        EmptyContent(message = it, icon = Res.drawable.ic_network_error, onRetryClick = {
-            bookmarkViewModel.getArticles()
+    val uiState by bookmarkViewModel.bookmarkNewsStateFlow.collectAsState()
+    val originDirection = LocalLayoutDirection.current
+    Column(
+        modifier = Modifier.fillMaxSize().padding(
+            start = paddingValues.calculateStartPadding(originDirection),
+            end = paddingValues.calculateEndPadding(originDirection),
+            bottom = paddingValues.calculateBottomPadding(),
+        ),
+    ) {
+        TopAppBar(title = {
+            Text(
+                text = stringResource(navigationItemsLists[2].title),
+                style = MaterialTheme.typography.headlineLarge,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+        }, actions = {
+            IconButton(onClick = {
+                rootNavController.navigate(SettingRouteScreen.SettingDetail.route)
+            }) {
+                Icon(
+                    imageVector = Icons.Filled.Settings,
+                    contentDescription = null,
+                )
+            }
         })
-    })
+        uiState.DisplayResult(onLoading = {
+            ShimmerEffect()
+        }, onSuccess = { articleList ->
+            if (articleList.isEmpty()) {
+                EmptyContent(
+                    message = stringResource(Res.string.no_bookmarks),
+                    icon = Res.drawable.ic_browse, isOnRetryBtnVisible = false
+                )
+            } else {
+                ArticleListScreen(
+                    articleList = articleList,
+                    rootNavController = rootNavController
+                )
+            }
+        }, onError = {
+            EmptyContent(message = it, icon = Res.drawable.ic_browse, onRetryClick = {
+                bookmarkViewModel.getArticles()
+            })
+        })
+    }
 
 }

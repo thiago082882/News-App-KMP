@@ -1,6 +1,7 @@
 package org.thiago.project.data.database
 
 import androidx.room.TypeConverter
+
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.thiago.project.data.model.Source

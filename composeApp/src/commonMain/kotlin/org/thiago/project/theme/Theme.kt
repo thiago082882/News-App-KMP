@@ -1,10 +1,18 @@
 package org.thiago.project.theme
 
+
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import org.thiago.project.utils.Theme
+import theme.Pink40
+import theme.Pink80
+import theme.Purple40
+import theme.Purple80
+import theme.PurpleGrey40
+import theme.PurpleGrey80
 
 private val DarkColorScheme = darkColorScheme(
     primary = Purple80,
@@ -30,12 +38,24 @@ private val LightColorScheme = lightColorScheme(
 
 @Composable
 fun NewsAppTheme(
+    appTheme: String?,
     darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {
-    val colorScheme = when {
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
+    val colorScheme = when (appTheme) {
+        Theme.LIGHT_MODE.name -> {
+            LightColorScheme
+        }
+        Theme.DARK_MODE.name -> {
+            DarkColorScheme
+        }
+        else -> {
+            if (darkTheme) {
+                DarkColorScheme
+            } else {
+                LightColorScheme
+            }
+        }
     }
 
     MaterialTheme(

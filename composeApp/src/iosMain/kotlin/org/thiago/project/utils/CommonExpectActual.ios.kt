@@ -1,17 +1,18 @@
+
 package org.thiago.project.utils
 
+
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.platform.LocalWindowInfo
+import androidx.compose.ui.unit.dp
+import androidx.room.Room
+import androidx.room.RoomDatabase
+import org.thiago.project.data.database.NewsDatabase
+import org.thiago.project.data.database.instantiateImpl
 import platform.UIKit.*
 import platform.Foundation.NSUUID
-
-
-actual fun getType(): Type {
-   return Type.Mobile
-}
-
-actual fun getRandomId(): String {
-   return NSUUID().UUIDString()
-}
-
+import platform.Foundation.NSHomeDirectory
 
 actual fun shareLink(url: String) {
    val currentViewController = UIApplication.sharedApplication().keyWindow?.rootViewController
@@ -20,5 +21,30 @@ actual fun shareLink(url: String) {
       viewControllerToPresent = activityViewController,
       animated = true,
       completion = null
+   )
+}
+
+actual fun randomUUIDStr(): String {
+   return NSUUID().UUIDString()
+}
+
+actual fun getType(): Type {
+   return Type.Mobile
+}
+
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+actual fun getScreenSize(): Size {
+   val configuration = LocalWindowInfo.current
+   val screenHeightDp = configuration.containerSize.height.dp
+   val screenWidthDP = configuration.containerSize.width.dp
+   return Size(width = screenWidthDP, height = screenHeightDp)
+}
+
+actual fun getDatabaseBuilder(): RoomDatabase.Builder<NewsDatabase> {
+   val dbFilePath = NSHomeDirectory() + "/$DB_Name"
+   return Room.databaseBuilder<NewsDatabase>(
+      name = dbFilePath,
+      factory =  { NewsDatabase::class.instantiateImpl() }
    )
 }

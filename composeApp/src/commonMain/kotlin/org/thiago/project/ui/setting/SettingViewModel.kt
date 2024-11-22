@@ -7,41 +7,32 @@ import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import org.thiago.project.data.database.NewsDatabase
+import kotlinx.coroutines.runBlocking
 import org.thiago.project.data.repository.LocalNewsRepository
-import org.thiago.project.utils.AppPreferencesImpl
-
+import org.thiago.project.utils.AppPreferences
 
 class SettingViewModel(
-    private val appPreferencesImpl: AppPreferencesImpl,
-    newsDatabase: NewsDatabase
+    private val appPreferences: AppPreferences,
+    private val localNewsRepository: LocalNewsRepository
 ) : ViewModel() {
 
-    private val localNewsRepository = LocalNewsRepository(newsDatabase.newsDao())
-
-
-    private val _isDarkModeEnabled = MutableStateFlow(false)
-    val isDarkModeEnabled = _isDarkModeEnabled.asStateFlow()
+    private val _currentTheme: MutableStateFlow<String?> = MutableStateFlow(null)
+    val currentTheme = _currentTheme.asStateFlow()
 
     fun deleteHistory() = viewModelScope.launch(Dispatchers.IO) {
         localNewsRepository.deleteAllBookmark()
     }
 
-    private val _isInit = MutableStateFlow(false)
-    val isInit = _isInit.asStateFlow()
-
-
     init {
-        isDarkModeEnabled()
-        _isInit.value = true
+        currentThemeGet()
     }
 
-    private fun isDarkModeEnabled() = viewModelScope.launch(Dispatchers.IO) {
-        _isDarkModeEnabled.value = appPreferencesImpl.isDarkModeEnabled()
+    private fun currentThemeGet() = runBlocking {
+        _currentTheme.value = appPreferences.getTheme()
     }
 
-    fun changeDarkMode(isEnabled: Boolean) = viewModelScope.launch(Dispatchers.IO) {
-        appPreferencesImpl.changeDarkMode(isEnabled)
-        _isDarkModeEnabled.value = isEnabled
+    fun changeThemeMode(value: String) = viewModelScope.launch(Dispatchers.IO) {
+        appPreferences.changeThemeMode(value)
+        _currentTheme.value = value
     }
 }

@@ -1,27 +1,27 @@
 package org.thiago.project.ui.bookmark
 
+
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
-import org.thiago.project.data.database.NewsDatabase
 import org.thiago.project.data.model.Article
 import org.thiago.project.data.repository.LocalNewsRepository
 import org.thiago.project.utils.Resource
 
-
-class BookmarkViewModel(newsDatabase: NewsDatabase) : ViewModel() {
-
-    private val localNewsRepository = LocalNewsRepository(newsDatabase.newsDao())
-
+class BookmarkViewModel(
+    private val localNewsRepository: LocalNewsRepository
+) : ViewModel() {
 
     private val _bookmarkNewsStateFlow =
-        MutableStateFlow<Resource<List<Article>>>(Resource.Idle)
+        MutableStateFlow<Resource<List<Article>>>(Resource.Loading)
     val bookmarkNewsStateFlow: StateFlow<Resource<List<Article>>>
         get() = _bookmarkNewsStateFlow
+
     init {
         getArticles()
     }

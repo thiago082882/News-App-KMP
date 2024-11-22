@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.flowOn
 import org.thiago.project.data.database.NewsDao
 import org.thiago.project.data.model.Article
 
+
 class LocalNewsRepository(
     private val newsDao: NewsDao
 ) {
@@ -16,7 +17,6 @@ class LocalNewsRepository(
     suspend fun deleteArticle(article: Article) {
         newsDao.delete(article)
     }
-
     suspend fun deleteAllBookmark() {
         newsDao.deleteAllBookmark()
     }

@@ -1,10 +1,13 @@
 package org.thiago.project.ui.common
 
+
+import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,73 +16,72 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.composed
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.TileMode
+import org.thiago.project.theme.cardMinSize
 import org.thiago.project.theme.imageSize
 import org.thiago.project.theme.mediumPadding
-import org.thiago.project.theme.shimmer
-import org.thiago.project.theme.xLargePadding
+import org.thiago.project.theme.xSmallPadding
 import org.thiago.project.theme.xxLargePadding
 import org.thiago.project.theme.xxSmallPadding
 import org.thiago.project.theme.xxxLargePadding
-import org.thiago.project.utils.Type
-import org.thiago.project.utils.getType
+import theme.shimmerColors
 
-fun Modifier.shimmerEffect(cornerRadius: CornerRadius = CornerRadius(x = 12f, y = 12f)) = composed {
-    val transition = rememberInfiniteTransition(label = "shimmer effect")
-    val alpha = transition.animateFloat(
-        initialValue = 0.2f, targetValue = 0.9f, animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 1000),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "transparency of the background color"
-    ).value
-    val color = shimmer.copy(alpha = alpha)
-    drawBehind {
-        drawRoundRect(
-            color = color,
-            cornerRadius = cornerRadius
-        )
-    }
-}
 
 @Composable
 fun ShimmerEffect() {
-    val isDesktop = remember {
-        getType() == Type.Desktop
+    val transition = rememberInfiniteTransition()
+    val translateAnimation by transition.animateFloat(
+        initialValue = 0f,
+        targetValue = 400f,
+        animationSpec = infiniteRepeatable(
+            tween(durationMillis = 1500, easing = LinearOutSlowInEasing),
+            RepeatMode.Reverse
+        ),
+    )
+    val brush by remember {
+        derivedStateOf {
+            Brush.linearGradient(
+                colors = shimmerColors,
+                start = Offset(translateAnimation, translateAnimation),
+                end = Offset(translateAnimation + 100f, translateAnimation + 100f),
+                tileMode = TileMode.Mirror,
+            )
+        }
     }
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(if (isDesktop) 3 else 1),
-        verticalArrangement = Arrangement.spacedBy(xLargePadding),
-        horizontalArrangement = Arrangement.spacedBy(xLargePadding),
-        contentPadding = PaddingValues(xLargePadding),
+    LazyVerticalStaggeredGrid(
+        columns = StaggeredGridCells.Adaptive(cardMinSize),
+        verticalItemSpacing = mediumPadding,
+        horizontalArrangement = Arrangement.spacedBy(mediumPadding),
+        contentPadding = PaddingValues(mediumPadding),
+        userScrollEnabled = false
     ) {
-        repeat(12) {
+        repeat(30) {
             item {
-                ArticleCardShimmerEffect()
+                ArticleCardShimmerEffect(brush)
             }
         }
     }
 }
 
 @Composable
-fun ArticleCardShimmerEffect() {
+fun ArticleCardShimmerEffect(brush: Brush) {
     Row(
-        horizontalArrangement = Arrangement.spacedBy(mediumPadding)
+        horizontalArrangement = Arrangement.spacedBy(xSmallPadding)
     ) {
         Box(
             modifier = Modifier
                 .size(imageSize)
-                .clip(MaterialTheme.shapes.large)
-                .shimmerEffect()
+                .background(brush, RoundedCornerShape(10))
         )
         Column(
             modifier = Modifier.weight(1f),
@@ -90,19 +92,19 @@ fun ArticleCardShimmerEffect() {
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(xxxLargePadding)
-                    .shimmerEffect()
+                    .background(brush, RoundedCornerShape(10))
             )
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(xxLargePadding)
-                    .shimmerEffect()
+                    .background(brush, RoundedCornerShape(10))
             )
             Box(
                 modifier = Modifier
-                    .fillMaxWidth(0.3f)
+                    .fillMaxWidth(0.4f)
                     .height(mediumPadding)
-                    .shimmerEffect()
+                    .background(brush, RoundedCornerShape(10))
             )
         }
     }

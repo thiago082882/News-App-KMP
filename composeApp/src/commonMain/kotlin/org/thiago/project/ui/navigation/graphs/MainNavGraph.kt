@@ -1,49 +1,34 @@
 package org.thiago.project.ui.navigation.graphs
 
+
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
+import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import org.thiago.project.data.database.NewsDatabase
+import androidx.navigation.navigation
 import org.thiago.project.ui.bookmark.BookmarkScreen
 import org.thiago.project.ui.headline.HeadlineScreen
 import org.thiago.project.ui.navigation.Graph
 import org.thiago.project.ui.navigation.MainRouteScreen
 import org.thiago.project.ui.search.SearchScreen
-import org.thiago.project.utils.FadeIn
-import org.thiago.project.utils.FadeOut
 
 
-@Composable
-fun MainNavGraph(
+fun NavGraphBuilder.mainNavGraph(
     rootNavController: NavHostController,
-    homeNavController: NavHostController,
-    innerPadding: PaddingValues,
-    newsDatabase: NewsDatabase,
+    innerPadding: PaddingValues
 ) {
-    NavHost(
-        modifier = Modifier.fillMaxSize().padding(innerPadding),
-        navController = homeNavController,
-        route = Graph.MainScreenGraph,
+    navigation(
         startDestination = MainRouteScreen.Headline.route,
-        enterTransition = { FadeIn },
-        exitTransition = { FadeOut },
+        route = Graph.MainScreenGraph
     ) {
-
         composable(route = MainRouteScreen.Headline.route) {
-            HeadlineScreen(rootNavController)
+            HeadlineScreen(rootNavController = rootNavController, paddingValues = innerPadding)
         }
-
         composable(route = MainRouteScreen.Search.route) {
-            SearchScreen(rootNavController)
+            SearchScreen(rootNavController = rootNavController, paddingValues = innerPadding)
         }
-
         composable(route = MainRouteScreen.Bookmark.route) {
-            BookmarkScreen(rootNavController,newsDatabase)
+            BookmarkScreen(rootNavController = rootNavController, paddingValues = innerPadding)
         }
     }
 
